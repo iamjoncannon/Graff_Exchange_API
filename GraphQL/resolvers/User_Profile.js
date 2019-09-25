@@ -1,6 +1,4 @@
-const holding_resolver = () => {
 
-}
 
 const transaction_resolver = () => {
 
