@@ -59,7 +59,7 @@ const login = async ( _, { email, password } )  => {
                         // password- but this won't 
                         // get returned to the client
                         // by the resolver 
-    const returned_user = { ... result.rows[0], token } 
+    const returned_user = { ...result.rows[0], token } 
                         
     return returned_user
 }

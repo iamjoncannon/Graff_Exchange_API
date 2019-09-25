@@ -15,8 +15,8 @@ type User_Profile {
     email: String 
     token: String
     balance: Float   
+    holdings: [ Holding ]
     # transction_history: [ Transaction ]
-    # holdings: [ Holding ]
 }
 
 type Holding {
