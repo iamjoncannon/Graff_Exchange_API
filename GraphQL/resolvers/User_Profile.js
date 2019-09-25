@@ -1,9 +1,5 @@
 const holdings_resolver = require('./holdings_resolver')
-
-const transaction_resolver = () => {
-
-    
-}
+const transaction_resolver = require("./transactions_resolver")
 
 module.exports = {
 
@@ -12,5 +8,6 @@ module.exports = {
     email: ({email}) => { return email},
     token: ({token}) => { return token},
     balance: ({balance}) => { return balance},
-    holdings: holdings_resolver
+    holdings: holdings_resolver,
+    transction_history: transaction_resolver
 }

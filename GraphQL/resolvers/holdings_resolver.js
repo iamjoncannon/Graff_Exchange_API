@@ -23,6 +23,6 @@ module.exports = async (User_Profile) => {
     
     // return a holdings array for the downstream resolver
 
-    return return_array
+    return result.rows 
 }
 

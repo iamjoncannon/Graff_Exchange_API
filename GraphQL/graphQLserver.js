@@ -20,7 +20,7 @@ const validate_request = ( {req} ) => {
 
     if(req.body.operationName !== "IntrospectionQuery") {
         
-        console.log(req.body.operationName)
+        // console.log(req.body.operationName)
         // console.log(req.body)
     }
 
