@@ -54,10 +54,30 @@ const login = async ( _, { email, password } )  => {
     const { id } = result.rows[0]
 
     let token = jwt.sign( { id }, config.secret, { expiresIn: '24h'} );
-    
+                        
+                        // this includes the hashed
+                        // password- but this won't 
+                        // get returned to the client
+                        // by the resolver 
     const returned_user = { ... result.rows[0], token } 
                         
     return returned_user
 }
 
 module.exports = login
+
+/*
+
+query login_call($email: String, $password: String) {
+
+	login(email: $email, password: $password){
+    first_name
+  }
+}
+
+{
+  "email": "String",
+  "password":"String"
+}
+
+*/

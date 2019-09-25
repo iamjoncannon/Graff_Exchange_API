@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors')
 const bodyParser = require('body-parser');
 let validate_token = require('./route_handlers/validate_token');
 let login = require('./route_handlers/login')
@@ -8,6 +9,9 @@ const postgres_pool = require("./postgresDB_driver/postgres_driver")
 let app = express(); 
 const graphQLServer = require("./GraphQL/graphQLserver")
 const port = process.env.PORT || 8000;
+
+app.use(cors())
+app.options('*', cors())
 
 graphQLServer.applyMiddleware({ app }); 
 
