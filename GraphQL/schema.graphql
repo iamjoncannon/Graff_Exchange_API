@@ -1,27 +1,46 @@
 type Query {
 
-    login(username: String, password: String): String
+    login(email: String, password: String): User_Profile
     get_all_users( _ : Boolean ): String
 }
 
 type Mutation {
 
-    sign_up(input : sign_up_input ): String
+    sign_up(input : sign_up_input ): User_Profile
 }
 
-type User {
-    
+type User_Profile {
+
+    first_name: String 
+    last_name: String 
+    email: String 
+    token: String
+    balance: Float   
+    # transction_history: [ Transaction ]
+    # holdings: [ Holding ]
+}
+
+type Holding {
+
+    ID: ID!
+    symbol: String 
+    current_holding: Float 
+}
+
+type Transaction {
+
     id: ID!
-    username: String 
-    password: String 
+    type: String  
+    symbol: String 
+    quantity: Int 
+    price: Float 
+    date_conducted: String 
 }
 
 input sign_up_input {
 
-    username: String 
     password: String 
     first_name: String 
     last_name: String 
     email: String 
-    Gender: String  
 }

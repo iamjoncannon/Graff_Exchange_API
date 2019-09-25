@@ -44,5 +44,5 @@ const test = postgres_pool.query("select now()", null, (err, res)=>{
 // have to initialize server after mongo connection
 init_mongo_Pool(()=>{
 
-    app.listen(port, () => console.log(`Server is listening on port: ${port}`));
+    app.listen(port, () => console.log(`Server is listening on port: ${port}`))
 })
