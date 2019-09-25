@@ -5,7 +5,7 @@ const fs = require('fs')
 const typeDefs = gql(fs.readFileSync(__dirname + "/schema.graphql", { encoding: "utf-8" }))
 const resolvers = require('./root_resolver.js')
 
-const validate_request = ({req}) => {
+const validate_request = ({ req }) => {
 
     const token = req.headers.authorization || null;
 

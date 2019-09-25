@@ -1,7 +1,6 @@
 type Query {
 
     login(email: String, password: String): User_Profile
-    get_all_users( _ : Boolean ): String
 }
 
 type Mutation {

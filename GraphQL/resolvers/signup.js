@@ -4,32 +4,33 @@ const db = require("../../postgresDB_driver/postgres_driver")
 const { UserInputError } = require('apollo-server-express');
 const { genSalt, hash } = require('bcrypt');
 
-const signup = async (_, {input}) => {
+const signup = async (_, { input }) => {
 
     let { password,
           first_name,
           last_name,
           email } = input
 
+    // encrypt password
+
+    const salt = await genSalt(10)
+
+    hashed_password = await hash(password, salt) 
+    
+    // validate input and return error if invalid before SQL call
+    
     const user_fields = {   first_name,
                             last_name,
                             email,
-                            password }
-
-    // validate input and return error if invalid before SQL call
-        
+                            password: hashed_password 
+                        }
+    
     const has_all_fields = Object.values(user_fields).filter(value => !!value).length === 4
 
     if(!has_all_fields){
 
         throw new UserInputError('Invalid User Input', user_fields);
     }
-
-    // encrypt password
-
-    const salt = await genSalt(10)
-
-    password = await hash(password, salt) 
 
     // insert into database, returning id and balance
     
@@ -59,6 +60,8 @@ const signup = async (_, {input}) => {
     
     let token = jwt.sign( { id }, config.secret, { expiresIn: '24h'} );
           
+    // return User_Profile object 
+
     const returned_user = { first_name,
                             last_name,
                             email,
@@ -70,3 +73,27 @@ const signup = async (_, {input}) => {
 }
 
 module.exports = signup
+
+/*
+
+mutation sign_up_call($input: sign_up_input) {
+
+	sign_up(input: $input) {
+    first_name,
+    last_name,
+    email,
+    token,
+    balance
+  }
+}
+
+{ 
+  "input":{
+        "password": "String",
+        "first_name": "String",
+        "last_name": "String",
+    		"email": "String"
+    }
+}
+
+*/
