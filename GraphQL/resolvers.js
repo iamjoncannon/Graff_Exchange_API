@@ -6,10 +6,12 @@ const Query = {
     login: async ( _, {username, password} ) => {
 
         /*
+
         query get_users_query( $username: String ){
         
             login(username: $username)
         }
+        
         */
 
         connect_to_pool( async (db) =>{
