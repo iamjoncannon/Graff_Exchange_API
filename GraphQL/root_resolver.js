@@ -5,6 +5,7 @@ const transaction_resolver = require("./resolvers/transactions_resolver")
 const ohlc_data_resolver = require('./resolvers/portfolio_holding/holding_ohlc_data_resolver')
 const news_data_resolver = require('./resolvers/individual_stock/individual_stock_news_resolver')
 const quarterly_financials_resolver = require('./resolvers/individual_stock/individual_querterly_financials_resolver')
+const time_series_financials_resolver = require('./resolvers/individual_stock/individual_time_series_data_resolver')
 
 const Query = {
 
@@ -34,7 +35,8 @@ const Holding = {
 
 const Individual_Stock_Data = {
     news: news_data_resolver,
-    quarterly_financials: quarterly_financials_resolver
+    quarterly_financials: quarterly_financials_resolver,
+    time_series: time_series_financials_resolver
 }
 
 const News_Story = news_data_resolver

@@ -115,6 +115,7 @@ type Transaction {
 type Individual_Stock_Data {
     news: [ News_Story ]
     quarterly_financials: Quarterly_Financials
+    time_series: [ Time_Series_Data_Point ]
 }
 
 type News_Story {
@@ -129,5 +130,16 @@ type News_Story {
 type Quarterly_Financials {
 
     data: String  # JSON
+    # note- we are using 100% of this data,
+    # and the data is > 50 different properties
+    # makes sense to use JSON 
 }
 
+type Time_Series_Data_Point {
+    
+    date: String # '2019-05-09',
+    open: Float 
+    high: Float 
+    low: Float
+    close: Float
+}
