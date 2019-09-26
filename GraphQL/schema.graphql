@@ -1,11 +1,45 @@
+"""
+
+two different sets of types:
+
+* types for the total profile section
+
+    - login for mobile requests entire section
+    - login for web only requests user data
+    - after login, web calls hydrate_portfolio and receives the Portfolio
+
+* types for the individual stock section
+
+    - mobile calls all_individual_stock_data- populates whole section
+    - web calls individual thunks for each section
+        - individual_news_data
+
+"""
+
 type Query {
 
     login(email: String, password: String): User_Profile
+    # hydrate_portfolio(_: Boolean): Portfolio 
+    all_individual_stock_data(symbol: String): Individual_Stock_Data  # mobile
+    # individual_news_data(symbol: String): [ News_Story ] # web 
 }
 
 type Mutation {
 
-    sign_up(input : sign_up_input ): User_Profile
+    sign_up(input: sign_up_input ): User_Profile
+    make_transaction(input: make_transaction_input ): Transaction
+}
+
+
+
+# types for total profile page
+
+input sign_up_input {
+
+    password: String 
+    first_name: String 
+    last_name: String 
+    email: String 
 }
 
 type User_Profile {
@@ -15,15 +49,34 @@ type User_Profile {
     email: String 
     token: String
     balance: Float   
-    # transction_history: [ Transaction ]
-    # holdings: [ Holding ]
+    holdings: [ Holding ] # only for mobile
+    transaction_history: [ Transaction ] # only for mobile
+}
+
+type Portfolio {
+    holdings: [ Holding ] 
+    transaction_history: [ Transaction ] 
 }
 
 type Holding {
 
-    ID: ID!
+    user_data: Holding_User_Data
+    ohlc_data: Holding_OHLC_Data
+}
+
+type Holding_User_Data {
+
+    id: ID!
     symbol: String 
     current_holding: Float 
+}
+
+type Holding_OHLC_Data {
+
+    companyName: String 
+    latestPrice: Float,
+    change: Float,
+    changePercent: Float,
 }
 
 type Transaction {
@@ -36,10 +89,45 @@ type Transaction {
     date_conducted: String 
 }
 
-input sign_up_input {
+input make_transaction_input {
 
-    password: String 
-    first_name: String 
-    last_name: String 
-    email: String 
+    type: String  
+    symbol: String 
+    quantity: Int 
+    price: Float
+}
+
+# objects for individual
+# stock page 
+
+type Individual_Stock_Data {
+    news: [ News_Story ]
+    quarterly_financials: Quarterly_Financials
+    time_series: [ Time_Series_Data_Point ]
+}
+
+type News_Story {
+
+    title: String 
+    date: String 
+    text: String 
+    image_url: String 
+    news_url: String 
+}
+
+type Quarterly_Financials {
+
+    data: String  # JSON
+    # note- we are using 100% of this data,
+    # and the data is > 20 different properties
+    # so, makes sense to use JSON 
+}
+
+type Time_Series_Data_Point {
+    
+    date: String # '2019-05-09',
+    open: Float 
+    high: Float 
+    low: Float
+    close: Float
 }

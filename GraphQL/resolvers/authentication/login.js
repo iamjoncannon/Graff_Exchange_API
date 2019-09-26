@@ -1,8 +1,8 @@
-const postgres_db = require("../../postgresDB_driver/postgres_driver")
+const postgres_db = require("../../../postgresDB_driver/postgres_driver")
 const bcrypt = require('bcrypt')
 const { UserInputError } = require('apollo-server-express');
 let jwt = require('jsonwebtoken');
-let config = require('../../config');
+let config = require('../../../config');
 
 const login = async ( _, { email, password } )  => {
 
@@ -54,8 +54,12 @@ const login = async ( _, { email, password } )  => {
     const { id } = result.rows[0]
 
     let token = jwt.sign( { id }, config.secret, { expiresIn: '24h'} );
-    
-    const returned_user = { ... result.rows[0], token } 
+                        
+                        // this includes the hashed
+                        // password- but this won't 
+                        // get returned to the client
+                        // by the resolver 
+    const returned_user = { ...result.rows[0], token } 
                         
     return returned_user
 }
