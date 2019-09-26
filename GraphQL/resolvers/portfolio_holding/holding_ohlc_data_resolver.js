@@ -4,7 +4,7 @@ const http = require('../../../server')
 // populates each stocks financial data from external
 // OHLC endpoint
 
-module.exports = async (Holding, args) => {
+module.exports = async ( Holding, args) => {
 
     // resolver may be called by parent node or 
     // by a query- 
@@ -22,7 +22,7 @@ module.exports = async (Holding, args) => {
     } catch (error) {
         
         result = error
-        console.log("error in holdings_resolver Query: ", error)
+        console.log("error in holdings_resolver Query: ", error.statusText)
     }
         
     return result.data

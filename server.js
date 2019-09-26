@@ -11,7 +11,7 @@ so, we instantiate it at the root of the application
 
 const axios = require("axios")
 const rateLimit = require('axios-rate-limit')
-const http = rateLimit(axios.create(), { maxRequests: 2, perMilliseconds: 5 });
+const http = rateLimit(axios.create(), { maxRequests: 2, perMilliseconds: 10 });
 module.exports = http
 
 const express = require('express');

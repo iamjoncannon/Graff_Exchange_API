@@ -65,19 +65,3 @@ const login = async ( _, { email, password } )  => {
 }
 
 module.exports = login
-
-/*
-
-query login_call($email: String, $password: String) {
-
-	login(email: $email, password: $password){
-    first_name
-  }
-}
-
-{
-  "email": "String",
-  "password":"String"
-}
-
-*/

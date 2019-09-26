@@ -1,12 +1,17 @@
 const login_resolver = require("./resolvers/authentication/login")
 const sign_up_resolver = require("./resolvers/authentication/signup")
-const financial_data_resolver = require('./resolvers/holding/holding_financial_data_resolver')
-const holdings_resolver = require('./resolvers/holding/holdings_resolver')
+const holdings_resolver = require('./resolvers/portfolio_holding/holdings_resolver')
 const transaction_resolver = require("./resolvers/transactions_resolver")
+const ohlc_data_resolver = require('./resolvers/portfolio_holding/holding_ohlc_data_resolver')
+const news_data_resolver = require('./resolvers/individual_stock/individual_stock_news_resolver')
 
 const Query = {
 
     login: login_resolver,
+    all_individual_stock_data: ( _, symbol ) => { return symbol }
+    
+    // ( parent, args) => { console.log(parent, args) } 
+    // hydrate_portfolio: hydrate_portfolio_resolver
 }
 
 const Mutation = {
@@ -16,21 +21,30 @@ const Mutation = {
 
 const User_Profile = {
 
-    holdings: holdings_resolver,
-    transaction_history: transaction_resolver
+    holdings: holdings_resolver, // [ Holding ]
+    transaction_history: transaction_resolver // [ Transaction ]
 }
 
-// see note below on why I'm doing this below
+// see note below
 
 const Holding = {
-    user_data: (User_Profile) => { return User_Profile },
-    financial_data: financial_data_resolver
+    // note- user data only populated from login call
+    user_data: ( user_data ) => { return user_data },
+    ohlc_data: ohlc_data_resolver   
 }
+
+const Individual_Stock_Data = {
+    news: news_data_resolver
+}
+
+const News_Story = news_data_resolver
 
 module.exports = { Query,
                    Mutation, 
                    User_Profile,
-                   Holding
+                   Holding,
+                   Individual_Stock_Data,
+                   News_Story
                  }
 
 /*
