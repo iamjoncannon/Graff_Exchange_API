@@ -74,26 +74,3 @@ const signup = async (_, { input }) => {
 
 module.exports = signup
 
-/*
-
-mutation sign_up_call($input: sign_up_input) {
-
-	sign_up(input: $input) {
-    first_name,
-    last_name,
-    email,
-    token,
-    balance
-  }
-}
-
-{ 
-  "input":{
-        "password": "String",
-        "first_name": "String",
-        "last_name": "String",
-    		"email": "String"
-    }
-}
-
-*/

@@ -30,8 +30,8 @@ const validate_request = async ( { req } ) => {
         jwt.verify(token, config.secret, (err, result)=>{
             
             if(err){
-                console.log(err)
-                
+
+                console.log(err)   
                 throw new AuthenticationError('token invalid: ', err)        
             }
             
