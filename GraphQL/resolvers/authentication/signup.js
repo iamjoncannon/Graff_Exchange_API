@@ -1,6 +1,6 @@
 let jwt = require('jsonwebtoken');
-let config = require('../../config');
-const db = require("../../postgresDB_driver/postgres_driver")
+let config = require('../../../config');
+const db = require("../../../postgresDB_driver/postgres_driver")
 const { UserInputError } = require('apollo-server-express');
 const { genSalt, hash } = require('bcrypt');
 

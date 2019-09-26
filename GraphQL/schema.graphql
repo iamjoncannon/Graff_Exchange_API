@@ -16,14 +16,45 @@ type User_Profile {
     token: String
     balance: Float   
     holdings: [ Holding ]
-    transction_history: [ Transaction ]
+    transaction_history: [ Transaction ]
 }
 
 type Holding {
 
-    ID: ID!
+    user_data: Holding_User_Data
+    financial_data: Holding_Financial_Data
+}
+
+type Holding_User_Data {
+
+    id: ID!
     symbol: String 
     current_holding: Float 
+}
+
+type Holding_Financial_Data {
+
+    symbol: String 
+    companyName: String 
+    primaryExchange: String 
+    calculationPrice: String 
+    open: Float 
+    close: Float,
+    high: Float,
+    low: Float,
+    latestPrice: Float,
+    latestSource: String,
+    latestVolume: Int,
+    iexRealtimePrice: Float,
+    previousClose: Float,
+    change: Float,
+    changePercent: Float,
+    volume: Float,
+    marketCap: Int,
+    peRatio: Float,
+    week52High: Float,
+    week52Low: Float,
+    ytdChange: Float,
 }
 
 type Transaction {

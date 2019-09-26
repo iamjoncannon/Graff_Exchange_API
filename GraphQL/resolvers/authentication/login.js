@@ -1,8 +1,8 @@
-const postgres_db = require("../../postgresDB_driver/postgres_driver")
+const postgres_db = require("../../../postgresDB_driver/postgres_driver")
 const bcrypt = require('bcrypt')
 const { UserInputError } = require('apollo-server-express');
 let jwt = require('jsonwebtoken');
-let config = require('../../config');
+let config = require('../../../config');
 
 const login = async ( _, { email, password } )  => {
 

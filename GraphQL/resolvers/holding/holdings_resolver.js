@@ -1,10 +1,9 @@
-let config = require('../../config');
-const postgres_db = require("../../postgresDB_driver/postgres_driver")
+const postgres_db = require("../../../postgresDB_driver/postgres_driver")
 
-// resolver receives a User_Profile upstream
+// populates entire holdings from database
 
 module.exports = async (User_Profile) => {
-    
+
     // call the transaction table with the id
 
     const holdings_call = "select * from holdings where userid = $1"
@@ -25,4 +24,5 @@ module.exports = async (User_Profile) => {
 
     return result.rows 
 }
+
 
