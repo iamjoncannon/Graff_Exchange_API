@@ -48,13 +48,32 @@ const signup = async (_, { input }) => {
 
         if(error.constraint === "unique_email") throw new UserInputError('Server Error- duplicate username', result);        
     }
-    
+
     if(!result.rows || !result.rows[0]){
+
+        console.log('Server Error- unable to create user', result)
         
         throw new UserInputError('Server Error- unable to create user', result);
     }
 
     const { balance, id } = result.rows[0]
+
+    // put GOOGL into their transactions for the downstream resolvers
+
+    try {   
+        const initial_holdings = `insert into holdings (userid, symbol, current_holding) values ( ${id}, 'GOOGL', 0);`
+        const initial_transactions = `insert into transactions (userid, type, symbol, quantity, price) values ( ${id}, 'Buy', 'GOOGL', 0, 0);`
+        
+        const initial_db_population = initial_holdings + initial_transactions 
+
+        result = await db.query(initial_db_population)
+        
+    } catch (error) {
+        
+        result = error
+
+        if(error.constraint === "unique_email") throw new UserInputError('Server Error- duplicate username', result);        
+    }
 
     // generate token 
     
@@ -66,8 +85,11 @@ const signup = async (_, { input }) => {
                             last_name,
                             email,
                             token,
-                            balance
+                            balance,
+                            id
                           }
+
+    console.log("user creds in signup call: ", id, token )
 
     return returned_user
 }

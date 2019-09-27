@@ -14,6 +14,8 @@ const make_trade_mutation = async ( _, { input }, req ) => {
         throw new UserInputError("Token invalid", token)
     }
 
+    // console.log("user creds in mutation call: ", user_id, req.body.token )
+
     const { type, symbol, quantity, price } = input 
     
     const cost = price * quantity
@@ -81,10 +83,10 @@ const make_trade_mutation = async ( _, { input }, req ) => {
 
     try {
 
-        purchases = result[0].rows[0].purchases || 0
-        first_purchase = result[0].rows[0].purchases === null 
-        sales = result[1].rows[0].sales || 0
-        current_balance = result[2].rows[0].balance
+        purchases =         Number(result[0].rows[0].purchases) || 0
+        first_purchase =    result[0].rows[0].purchases === null
+        sales =             Number(result[1].rows[0].sales) || 0
+        current_balance =   Number(result[2].rows[0].balance) || 0
     }
     catch(err){
         console.log(err)
@@ -92,6 +94,8 @@ const make_trade_mutation = async ( _, { input }, req ) => {
     }
 
     const current_holdings = purchases - sales 
+
+    // console.log("current_holdings :", current_holdings, "purchases: ", purchases, "sales: ", sales, "first_purchase: ", first_purchase)
 
     // validate sell order 
 

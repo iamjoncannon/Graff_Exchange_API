@@ -42,8 +42,8 @@ const validate_request = async ( { req } ) => {
 
     if(req.body.operationName !== "IntrospectionQuery") {
         
-        // console.log(decoded_token)
         console.log(req.body.operationName)
+        // console.log("token: ", decoded_token)
         // console.log(req.body)
     }
 

@@ -3,7 +3,7 @@ const postgres_db = require("../../../postgresDB_driver/postgres_driver")
 // populates entire holdings from database
 
 module.exports = async (User_Profile) => {
-
+    
     // call the transaction table with the id
 
     const holdings_call = "select * from holdings where userid = $1"
