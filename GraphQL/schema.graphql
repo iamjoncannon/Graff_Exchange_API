@@ -21,6 +21,7 @@ type Query {
     login(email: String, password: String): User_Profile
     hydrate_portfolio: Portfolio 
     all_individual_stock_data(symbol: String): Individual_Stock_Data  # mobile
+    hydrate_news(symbol: String): [News_Story]
     # individual_news_data(symbol: String): [ News_Story ] # web 
 }
 

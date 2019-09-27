@@ -11,9 +11,9 @@ const make_trade_mutation_resolver = require('./resolvers/make_trade_mutation')
 const Query = {
 
     login: login_resolver,
-    hydrate_portfolio: ( _, __, req ) => { const id = req.body.token.id
-                                            return  {id}},
-    all_individual_stock_data: ( _, symbol ) => { return symbol }
+    hydrate_portfolio: ( _, __, req ) => { return  {id: req.body.token.id} },
+    all_individual_stock_data: ( _, symbol ) => { return symbol },
+    hydrate_news: (_, vars) => { return news_data_resolver(vars)}
 }
 
 const Mutation = {
@@ -106,7 +106,5 @@ resolver as a separate object, then superficially populate this as a
 separate property alongside the additional data that I want the client
 to be able to request. In the case of the login and trade mutations,
 this is data from the OHLC endpoint.
-
-
 
 */
