@@ -4,19 +4,22 @@ const holdings_resolver = require('./resolvers/portfolio_holding/holdings_resolv
 const transaction_resolver = require("./resolvers/transactions_resolver")
 const ohlc_data_resolver = require('./resolvers/portfolio_holding/holding_ohlc_data_resolver')
 const news_data_resolver = require('./resolvers/individual_stock/individual_stock_news_resolver')
-const quarterly_financials_resolver = require('./resolvers/individual_stock/individual_querterly_financials_resolver')
+const quarterly_financials_resolver = require('./resolvers/individual_stock/individual_quarterly_financials_resolver')
 const time_series_financials_resolver = require('./resolvers/individual_stock/individual_time_series_data_resolver')
+const make_trade_mutation_resolver = require('./resolvers/make_trade_mutation')
 
 const Query = {
 
     login: login_resolver,
-    all_individual_stock_data: ( _, symbol ) => { return symbol }
-    // hydrate_portfolio: hydrate_portfolio_resolver
+    hydrate_portfolio: ( _, __, req ) => { return  {id: req.body.token.id} },
+    all_individual_stock_data: ( _, symbol ) => { return symbol },
+    hydrate_news: (_, vars) => { return news_data_resolver(vars)}
 }
 
 const Mutation = {
 
-    sign_up : sign_up_resolver
+    sign_up : sign_up_resolver,
+    make_trade_mutation: make_trade_mutation_resolver
 }
 
 const User_Profile = {
@@ -25,10 +28,15 @@ const User_Profile = {
     transaction_history: transaction_resolver // [ Transaction ]
 }
 
-// see note below
+const Portfolio = {
+
+    holdings: holdings_resolver, // [ Holding ]
+    transaction_history: transaction_resolver // [ Transaction ]
+}
 
 const Holding = {
     
+    // see note below
     user_data: ( user_data ) => { return user_data }, // only populated from login call
     ohlc_data: ohlc_data_resolver   
 }
@@ -43,51 +51,60 @@ const News_Story = news_data_resolver
 
 const Quarterly_Financials = quarterly_financials_resolver
 
+const Trade_Return_Data = {
+
+    transaction_result: ( transaction_result ) => { return transaction_result },
+    ohlc_data: ohlc_data_resolver
+}
+
 module.exports = { Query,
                    Mutation, 
                    User_Profile,
+                   Portfolio,
                    Holding,
                    Individual_Stock_Data,
                    News_Story,
-                   Quarterly_Financials
+                   Quarterly_Financials,
+                   Trade_Return_Data
                  }
 
 /*
 
 note- 
 
-the properties in the user_data_resolver, in the client,
-are parallel with the properties returned from the financial_data 
-(which is just "data"- admittedly not the best variable name )
- 
-the client is currently organized that way, but to port the API
-to GraphQL, we need to bundle the user fields into a separate 
-object. 
+the main goal of porting this API to GraphQL is to split data servicing
+between the mobile and web versions of the application- 
 
-the goal of porting this API to GraphQL is to split data servicing
-between the mobile and web versions of the application- the mobile
-version will request the entirety of the object and the web will
-make subsquent calls in a separate query
+in several of the operations above, we want to give the client
+the option to populate one basic operation with other data
 
-if the user data is resolved by a function directly in the holding object,
-the user fields will be automatically
-resolved from the database call, meaning, in order to hydrate
-the ohlc_data object from the API call, we would have to iterate
-over the holdings array after the postgres database call
-and call the external api for each item, like we did in the Redux thunk
-in the first version of the application- 
+for example, login resolves with a type User_Profile, which itself
+contains [ Holding ] and [ transaction_history ], which have
+separate resolvers 
 
-...this would defeat the purpose of using GraphQL
+optionally, we want the client to be able to request OHLC data
+on each of these holdings
 
-(in graph jargon, basically, these
-would not have two separate edges from their parent node, the
-financial data would in some sense be in the same node 
-as the user data, and wouldn't be managed by the GraphQL
-engine. the object nesting is what creates the edges)
+however, if the user properties for each Holding- the users's 
+specific holding of that stock- are not defined as a separate
+object, but rather directly as properties of the holding object
+returned from the parent resolver, and further, the OHLC data is itself 
+then defined as a property of the holding, GraphQL will 
+not treat resolving them as separate operations (they're "the  
+same node" so to speak, they don't have separate edges from the 
+parent resolver node)
 
-the solution is to split them, superficially populate
-the user fields, then have the client 
-reformat the data in the thunk so that it has the structure
-expected by the React components 
+it will expect the parent resolver that issues [ Holding ] - defined
+on the User Profile resolver, to populate the OHLC data, which would
+mean entail probably iterateing over the array in the parent 
+resolver and making the OHLC database call- and in the process
+more or less defeating the purpose of using GraphQL
+
+in order to have GraphQL manage these as two separate operations,
+the solution I found was to define the data returned from the parent
+resolver as a separate object, then superficially populate this as a
+separate property alongside the additional data that I want the client
+to be able to request. In the case of the login and trade mutations,
+this is data from the OHLC endpoint.
 
 */
