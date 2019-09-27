@@ -9,44 +9,45 @@ let config = require('../config');
 
 const validate_request = async ( { req } ) => {
 
-    const token  = req.headers.authorization
+    const token = req.headers.authorization
 
     // block requests for operations that require
     // authorization, where no token is included
 
-    const is_valid_without_authentication = ['sign_up_call',"login_call", "IntrospectionQuery"]
+    const is_valid_without_authentication = ['sign_up_call',"login_call", "IntrospectionQuery"].includes(req.body.operationName)
                       
-    if(!token && !is_valid_without_authentication.includes(req.body.operationName)) {
+    if(!token && !is_valid_without_authentication ) {
         
         throw new AuthenticationError('user not signed in')
     }
 
     // validate token 
 
-    let decoded 
+    let decoded_token 
 
     if( !is_valid_without_authentication ){
 
         jwt.verify(token, config.secret, (err, result)=>{
-            
+        
             if(err){
 
-                console.log(err)   
+                console.log("token authentication error: ", err)   
                 throw new AuthenticationError('token invalid: ', err)        
             }
             
-            decoded = result 
+            decoded_token = result 
         })    
+
     }
 
     if(req.body.operationName !== "IntrospectionQuery") {
         
-        // console.log(decoded)
-        // console.log(req.body.operationName)
+        // console.log(decoded_token)
+        console.log(req.body.operationName)
         // console.log(req.body)
     }
 
-    req.body.token = decoded 
+    req.body.token = decoded_token 
 
     return req
 }

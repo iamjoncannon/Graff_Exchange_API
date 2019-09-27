@@ -1,66 +1,173 @@
-let config = require('../../../config');
-const db = require("../../../postgresDB_driver/postgres_driver")
+const postgres_db = require("../../postgresDB_driver/postgres_driver")
 const { UserInputError } = require('apollo-server-express');
 
-// "UPDATE TableName SET TableField = TableField + 1 WHERE SomeFilterField = @ParameterID"
+const make_trade_mutation = async ( _, { input }, req ) => {
 
-const make_trade_mutation = async (_, { input }) => {
+    let user_id
+    
+    if(req.body.token){
+    
+        user_id = req.body.token.id
+    }
+    else{
 
-    // need - user ID, symbol, transaction type, price, quantity 
+        throw new UserInputError("Token invalid", token)
+    }
 
-    let { type, symbol, quantity, price } = input 
+    const { type, symbol, quantity, price } = input 
+    
+    const cost = price * quantity
 
     const is_buy = type === "Buy"
 
-    // validate trade 
+    let first_purchase // determined when we validate the trade below 
 
-    let balance_change = is_buy ? ( price * quantity * -1 ) : ( price * quantity ) ;   
+    /* 
+    
+    validate trade  
+    
+    we need to check a few different things, and
+    instead of doing multiple calls, we will put them
+    in one longer database query 
+
+    note- pg doesn't support using arguments with multiple
+    commands- string concatenation is not best practice as it
+    exposes you to SQL injections 
+    
+    we will guard against injections by validating the 
+    arguments before using 
+
+    */
+
+    // ticker symbols are never multiple words, like "; drop table users;"
+    // if we validate that the symbol is one word, 
+    // it should mitigate potential injections
+
+    if(symbol.split(" ").length > 1){
+
+        throw new UserInputError("Invalid stock symbol", symbol)
+    }
+
+    if(typeof user_id !== "number"){
+
+        throw new UserInputError("Invalid user_id", user_id)        
+    }
+
+    const check_purchases = `select sum(quantity) as purchases from transactions 
+                             where userid = ${user_id} and symbol = '${symbol}' and type = 'Buy';` 
+
+    const check_sales = `select sum(quantity) as sales from transactions 
+                         where userid = ${user_id} and symbol = '${symbol}' and type = 'Sell';`
+
+    const check_balance = `select balance from users where id = ${user_id};`
+
+    const validate_trade_call = `${check_purchases} ${check_sales} ${check_balance}`
+
+    let result 
+            
+    try {   
+        
+        result = await postgres_db.query(validate_trade_call)
+        
+    } catch (error) {
+        
+        result = error
+        console.log("database error in trade mutation: ", error)
+    }
+
+    let purchases  
+    let sales 
+    let current_balance 
+
+    try {
+
+        purchases = result[0].rows[0].purchases || 0
+        first_purchase = result[0].rows[0].purchases === null 
+        sales = result[1].rows[0].sales || 0
+        current_balance = result[2].rows[0].balance
+    }
+    catch(err){
+        console.log(err)
+        throw new UserInputError("Error validating trade", result)
+    }
+
+    const current_holdings = purchases - sales 
+
+    // validate sell order 
+
+    if(!is_buy && current_holdings < quantity){
+
+        throw new UserInputError("Transaction failed- holdings insufficient to cover sale.", result)
+    }
+
+    //validate buy order 
+
+    if(current_balance < cost){
+
+        throw new UserInputError("Transaction failed- unable to cover purchase.", current_balance)
+    }
+            
+    // transaction
+
+    const make_first_purchase_call = "insert into holdings (userID, SYMBOL, CURRENT_HOLDING) values ($1, $2, $3) returning CURRENT_HOLDING;"
+
+    const update_holding_call = "update holdings set current_holding = current_holding + $3 where userid = $1 and symbol = $2 returning current_holding;"
+    
+    const purchase_call = first_purchase ? make_first_purchase_call : update_holding_call
+
+    const insert_transaction_call = "insert into transactions (userID, TYPE, SYMBOL, QUANTITY, PRICE) values ($1, $2, $3, $4, $5) returning *;"
+
+    const update_balance_call = "update users set balance = balance + $1 where ID = $2 returning balance;"
+    
     let holding_change = is_buy ? quantity : quantity * -1 ;
 
-    // if buy- check current balance
+    let balance_change = is_buy ? ( cost * -1 ) : ( cost ) ;   
 
-        // if can't cover purchase, return error 
+    const Trade_Return_Data = { symbol: symbol }
+ 
+    try {
 
-        if(is_buy){
+        await postgres_db.query('BEGIN')
+                                                                                                                
+        const purchase_call_output  = await postgres_db.query(purchase_call, [user_id, symbol, holding_change])
+    
+        const insert_transaction_call_output = await postgres_db.query(insert_transaction_call, [user_id, type, symbol, quantity, price])
 
-            // 
+        const update_balance_call_output = await postgres_db.query(update_balance_call, [ balance_change, user_id ])
+    
+        await postgres_db.query('COMMIT')
 
-            const check_balance = "select balance from users where id = $1"
+        if(purchase_call_output.rows){
 
+            Trade_Return_Data["new_holding"] = purchase_call_output.rows[0].current_holding
+        } 
 
-
-        }
-        else{
+        if(insert_transaction_call_output.rows) {
             
-            // if sell - check current holdings 
-
-            // if can't cover sale, return error 
-
+            const formatted_transaction_object = {
+                ...insert_transaction_call_output.rows[0], 
+                id: insert_transaction_call_output.rows[0].userid // rekey this property 
+            }
+            
+            Trade_Return_Data["transaction"] = formatted_transaction_object
         }
+
+        if(update_balance_call_output.rows){
+
+            Trade_Return_Data["balance"] = update_balance_call_output.rows[0].balance
+        }    
+    } 
+    catch (error) {
     
+        await postgres_db.query('ROLLBACK')
 
+        console.log("trade transaction failed", error)
+
+        throw new UserInputError("Transaction failed", error)
+
+    } 
     
-    // three calls involved:
-
-    // update holdings
-        // if buy, and first purchase, make separate call
-    
-    const make_first_holding_call = "insert into holdings (userID, SYMBOL, CURRENT_HOLDING) values ($1, $2, $3) returning CURRENT_HOLDING;"
-
-    const update_holding_call = "update holdings set current_holding = $1 where userid = $2 and symbol = $3 returning current_holding;"
-
-
-    // insert transaction
-
-    const insert_transaction_call = "insert into transactions (userID, TYPE, SYMBOL, QUANTITY, PRICE) values ($1, $2, $3, $4, $5) returning id;"
-
-
-    // update balance
-
-    const update_balance_call = "update users set balance = $1 where ID = $2 returning balance;"
-
-
-
+    return Trade_Return_Data
 }
 
 module.exports = make_trade_mutation 

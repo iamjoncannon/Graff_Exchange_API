@@ -27,12 +27,15 @@ type Query {
 type Mutation {
 
     sign_up(input: sign_up_input ): User_Profile
-    make_transaction(input: make_transaction_input ): Transaction
+    make_trade_mutation(input: make_transaction_input ): Trade_Return_Data
 }
 
 
+"""
 
-# types for total profile page
+types for total profile page
+
+"""
 
 input sign_up_input {
 
@@ -77,6 +80,7 @@ type Holding_OHLC_Data {
     latestPrice: Float,
     change: Float,
     changePercent: Float,
+    open: Float
 }
 
 type Transaction {
@@ -97,8 +101,26 @@ input make_transaction_input {
     price: Float
 }
 
-# objects for individual
-# stock page 
+type Trade_Return_Data {
+
+    transaction_result: Trade_Return_Data_Fields
+    ohlc_data: Holding_OHLC_Data
+}
+
+type Trade_Return_Data_Fields {
+
+    symbol: String 
+    transaction: Transaction
+    balance: Float 
+    new_holding: Int
+}
+
+""" 
+
+objects for individual
+stock page 
+
+"""
 
 type Individual_Stock_Data {
     news: [ News_Story ]
