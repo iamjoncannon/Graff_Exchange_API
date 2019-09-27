@@ -1,6 +1,6 @@
 const postgres_db = require("../../../postgresDB_driver/postgres_driver")
 
-// populates entire holdings from database
+// populates [ Holding ]
 
 module.exports = async ( User_Profile ) => {
     

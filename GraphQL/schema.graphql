@@ -19,10 +19,11 @@ two different sets of types:
 type Query {
 
     login(email: String, password: String): User_Profile
-    hydrate_portfolio: Portfolio 
+    hydrate_portfolio: Portfolio # web
     all_individual_stock_data(symbol: String): Individual_Stock_Data  # mobile
     hydrate_news(symbol: String): [News_Story] # web
     hydrate_quarterly_financials(symbol: String): Quarterly_Financials # web
+    hydrate_time_series_data(symbol: String): [ Time_Series_Data_Point ] # web
 }
 
 type Mutation {
@@ -149,7 +150,7 @@ type Quarterly_Financials {
 
 type Time_Series_Data_Point {
     
-    date: String # '2019-05-09',
+    date: String 
     open: Float 
     high: Float 
     low: Float
