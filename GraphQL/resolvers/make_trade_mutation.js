@@ -41,7 +41,7 @@ const make_trade_mutation = async ( _, { input }, req ) => {
 
     // ticker symbols are never multiple words, like "; drop table users;"
     // if we validate that the symbol is one word, 
-    // it should mitigate potential injections
+    // it should mitigate injections
 
     if(symbol.split(" ").length > 1){
 
@@ -118,6 +118,8 @@ const make_trade_mutation = async ( _, { input }, req ) => {
 
     const Trade_Return_Data = { symbol: symbol }
  
+    // atomic 
+
     try {
 
         await postgres_db.query('BEGIN')
