@@ -11,8 +11,9 @@ const make_trade_mutation_resolver = require('./resolvers/make_trade_mutation')
 const Query = {
 
     login: login_resolver,
+    hydrate_portfolio: ( _, __, req ) => { const id = req.body.token.id
+                                            return  {id}},
     all_individual_stock_data: ( _, symbol ) => { return symbol }
-    // hydrate_portfolio: hydrate_portfolio_resolver
 }
 
 const Mutation = {
@@ -27,6 +28,11 @@ const User_Profile = {
     transaction_history: transaction_resolver // [ Transaction ]
 }
 
+const Portfolio = {
+
+    holdings: holdings_resolver, // [ Holding ]
+    transaction_history: transaction_resolver // [ Transaction ]
+}
 
 const Holding = {
     
@@ -54,6 +60,7 @@ const Trade_Return_Data = {
 module.exports = { Query,
                    Mutation, 
                    User_Profile,
+                   Portfolio,
                    Holding,
                    Individual_Stock_Data,
                    News_Story,
@@ -81,7 +88,7 @@ on each of these holdings
 however, if the user properties for each Holding- the users's 
 specific holding of that stock- are not defined as a separate
 object, but rather directly as properties of the holding object
-return from the parent resolver, and the OHLC data is itself 
+returned from the parent resolver, and further, the OHLC data is itself 
 then defined as a property of the holding, GraphQL will 
 not treat resolving them as separate operations (they're "the  
 same node" so to speak, they don't have separate edges from the 

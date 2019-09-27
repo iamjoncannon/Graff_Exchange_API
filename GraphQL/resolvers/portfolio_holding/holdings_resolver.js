@@ -2,7 +2,7 @@ const postgres_db = require("../../../postgresDB_driver/postgres_driver")
 
 // populates entire holdings from database
 
-module.exports = async (User_Profile) => {
+module.exports = async ( User_Profile, y, z ) => {
     
     // call the transaction table with the id
 

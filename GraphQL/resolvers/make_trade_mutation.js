@@ -13,9 +13,7 @@ const make_trade_mutation = async ( _, { input }, req ) => {
 
         throw new UserInputError("Token invalid", token)
     }
-
-    // console.log("user creds in mutation call: ", user_id, req.body.token )
-
+    
     const { type, symbol, quantity, price } = input 
     
     const cost = price * quantity
@@ -55,15 +53,11 @@ const make_trade_mutation = async ( _, { input }, req ) => {
         throw new UserInputError("Invalid user_id", user_id)        
     }
 
-    const check_purchases = `select sum(quantity) as purchases from transactions 
-                             where userid = ${user_id} and symbol = '${symbol}' and type = 'Buy';` 
-
-    const check_sales = `select sum(quantity) as sales from transactions 
-                         where userid = ${user_id} and symbol = '${symbol}' and type = 'Sell';`
+    const check_holdings = `select current_holding from holdings where userid = ${user_id} and symbol = '${symbol}';`
 
     const check_balance = `select balance from users where id = ${user_id};`
 
-    const validate_trade_call = `${check_purchases} ${check_sales} ${check_balance}`
+    const validate_trade_call = `${check_holdings} ${check_balance}`
 
     let result 
             
@@ -76,37 +70,32 @@ const make_trade_mutation = async ( _, { input }, req ) => {
         result = error
         console.log("database error in trade mutation: ", error)
     }
-
-    let purchases  
-    let sales 
+ 
     let current_balance 
+    let current_holding
 
     try {
+        current_holding =   result[0].rows[0] ?  result[0].rows[0].current_holding : 0 ;
 
-        purchases =         Number(result[0].rows[0].purchases) || 0
-        first_purchase =    result[0].rows[0].purchases === null
-        sales =             Number(result[1].rows[0].sales) || 0
-        current_balance =   Number(result[2].rows[0].balance) || 0
+        first_purchase  =   result[0].rows.length === 0
+
+        current_balance =   Number(result[1].rows[0].balance) || 0
     }
     catch(err){
         console.log(err)
         throw new UserInputError("Error validating trade", result)
     }
-
-    const current_holdings = purchases - sales 
-
-    // console.log("current_holdings :", current_holdings, "purchases: ", purchases, "sales: ", sales, "first_purchase: ", first_purchase)
-
+ 
     // validate sell order 
 
-    if(!is_buy && current_holdings < quantity){
+    if(!is_buy && current_holding < quantity){
 
         throw new UserInputError("Transaction failed- holdings insufficient to cover sale.", result)
     }
 
     //validate buy order 
 
-    if(current_balance < cost){
+    if(is_buy && current_balance < cost){
 
         throw new UserInputError("Transaction failed- unable to cover purchase.", current_balance)
     }
