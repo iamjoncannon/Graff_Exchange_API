@@ -19,6 +19,8 @@ module.exports = async ( { symbol } ) => {
         return { data : redis_data } 
     }
     
+
+    
     let result 
 
     try {   

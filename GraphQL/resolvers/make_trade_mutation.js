@@ -17,12 +17,15 @@ const make_trade_mutation = async ( _, { input }, req ) => {
         throw new UserInputError("Token invalid", token)
     }
 
-    // delete transactions from redis cache- 
+    // delete transactions and holdings from redis cache- 
 
-    let redis_delete = await Redis.del(`${user_id}-transactions`)
+    let redis_delete_transactions = await Redis.del(`${user_id}-transactions`)
+    let redis_delete_holdings = await Redis.del(`${user_id}-holdings`)
 
-    if(!redis_delete) console.log("transactions redis delete failed", redis_delete)
-
+    if(!redis_delete_transactions || !redis_delete_holdings){
+     
+        console.log("transactions redis delete failed", redis_delete)
+    }
 
     const { type, symbol, quantity, price } = input 
     

@@ -1,10 +1,10 @@
-const axios = require("axios")
 const { http } = require('../../../server')
+const { Redis } = require('../../../server')
 
 // populates each stocks financial data from external
 // OHLC endpoint
 
-module.exports = async ( Holding, args) => {
+module.exports = async ( Holding ) => {
 
     // resolver may be called by parent node or 
     // by a query- 
@@ -12,7 +12,22 @@ module.exports = async ( Holding, args) => {
     let symbol 
 
     if(Holding) symbol = Holding.symbol
+
     
+    const redis_key = `${symbol}-ohlc`
+
+    let redis_data = await Redis.getAsync(redis_key)
+
+    if(redis_data !== null){
+        
+        console.log( "redis cache hit: ", redis_key )
+
+        return JSON.parse(redis_data) 
+    }
+
+
+
+
     let result 
     
     try {   
@@ -24,6 +39,10 @@ module.exports = async ( Holding, args) => {
         result = error
         console.log("error in holdings_resolver Query: ", error.statusText)
     }
-        
+
+
+    Redis.set(redis_key, JSON.stringify(result.data) )
+
+    
     return result.data
 }
