@@ -84,7 +84,7 @@ contains [ Holding ] and [ transaction_history ], which have
 separate resolvers 
 
 optionally, we want the client to be able to request OHLC data
-on each of these holdings
+on each of [ Holding ]
 
 however, if the user properties for each Holding- the users's 
 specific holding of that stock- are not defined as a separate
@@ -92,19 +92,26 @@ object, but rather directly as properties of each Holding
 returned from the parent resolver, and further, the OHLC data is itself 
 then defined as a property of Holding, GraphQL will 
 not treat resolving them as separate operations (they're "the  
-same node" so to speak, they don't have separate edges from the 
-parent resolver node)
+same node" so to speak, they don't have separate edges from a 
+shared parent node)
 
 it will expect the parent resolver that issues [ Holding ] - defined
 on the User Profile resolver, to populate the OHLC data, which would
-mean iterateing over the array in the parent 
-resolver and making the OHLC database call- 
-defeating the purpose of using GraphQL
+mean iterateing over the array in the parent resolver and making the 
+OHLC database call- defeating the purpose of using GraphQL
 
 in order to have GraphQL manage these as two separate operations,
 the solution I found was to define the data returned from the parent
-resolver as a separate object, then superficially populate this as a
-separate property alongside the additional data that I want the client
-to be able to request. 
+resolver as a separate object, then superficially populate this in a 
+separate function, alongside the additional data that I want the client
+to be able to optionally request. 
+
+This looks like:
+
+    Returned from parent resolver:
+    user_data: ( user_data ) => { return user_data }, 
+
+    Optionally popualted in mobile version of app: 
+    ohlc_data: ohlc_data_resolver 
 
 */
