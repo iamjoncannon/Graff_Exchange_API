@@ -13,7 +13,6 @@ module.exports = async ( Holding ) => {
 
     if(Holding) symbol = Holding.symbol
 
-    
     const redis_key = `${symbol}-ohlc`
 
     let redis_data = await Redis.getAsync(redis_key)
@@ -24,7 +23,6 @@ module.exports = async ( Holding ) => {
 
         return JSON.parse(redis_data) 
     }
-
 
 
 
@@ -42,7 +40,27 @@ module.exports = async ( Holding ) => {
 
 
     Redis.set(redis_key, JSON.stringify(result.data) )
-
     
+    // if during trading hours
+
+    const is_EOD = (new Date()).getHours() < 17
+
+    let expiry_time 
+
+    if(is_EOD){
+
+        // set key expiration to market open 
+        const market_open = parseInt( (new Date().setHours(9, 30, 0, 0)) / 1000)
+        expiry_time = market_open
+    }
+    else{
+
+        // set to market close
+        const market_close = parseInt( (new Date().setHours(16, 0, 0, 0)) / 1000)
+        expiry_time = market_close 
+    }
+    
+    Redis.expireat(redis_key, expiry_time);
+
     return result.data
 }
