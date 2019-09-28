@@ -1,3 +1,5 @@
+// define all resolvers for API
+
 const login_resolver = require("./resolvers/authentication/login")
 const sign_up_resolver = require("./resolvers/authentication/signup")
 

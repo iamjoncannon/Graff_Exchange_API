@@ -2,8 +2,11 @@ const axios = require("axios")
 const rateLimit = require('axios-rate-limit')
 const http = rateLimit(axios.create(), { maxRequests: 2, perMilliseconds: 10 });
 // singleton axios object to prevent getting throttled by external APIs
-// has to be instantiated before GraphQL server
-module.exports = http 
+module.exports.http = http 
+// singleton Redis cache client
+const Redis = require("./Redis/cache_root")
+module.exports.Redis = Redis.client
+// both have to be instantiated before GraphQL server
 const express = require('express');
 const cors = require('cors')
 const bodyParser = require('body-parser');

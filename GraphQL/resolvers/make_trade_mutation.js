@@ -1,10 +1,13 @@
 const postgres_db = require("../../postgresDB_driver/postgres_driver")
 const { UserInputError } = require('apollo-server-express');
+const { Redis } = require('../../server')
+
+// mutation to service trade and adding stock to watchlist 
 
 const make_trade_mutation = async ( _, { input }, req ) => {
 
     let user_id
-    
+
     if(req.body.token){
     
         user_id = req.body.token.id
@@ -13,7 +16,17 @@ const make_trade_mutation = async ( _, { input }, req ) => {
 
         throw new UserInputError("Token invalid", token)
     }
-    
+
+    // delete transactions and holdings from redis cache- 
+
+    let redis_delete_transactions = await Redis.del(`${user_id}-transactions`)
+    let redis_delete_holdings = await Redis.del(`${user_id}-holdings`)
+
+    if(!redis_delete_transactions || !redis_delete_holdings){
+     
+        console.log("transactions redis delete failed", redis_delete)
+    }
+
     const { type, symbol, quantity, price } = input 
     
     const cost = price * quantity
