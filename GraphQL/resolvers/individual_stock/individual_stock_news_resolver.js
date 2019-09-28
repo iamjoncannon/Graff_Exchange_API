@@ -30,9 +30,10 @@ module.exports = async ( { symbol } ) => {
         console.log("error in holdings_resolver Query: ", error.statusText)
     }
 
-
+    // news keys expire in 24 hours - 60s * 60m * 24h
+    let TTL = 60 * 60 * 24
     
-    Redis.set(redis_key, JSON.stringify(result.data.data) )
+    Redis.set(redis_key, JSON.stringify(result.data.data), "EX", TTL )
 
     
     return result.data.data

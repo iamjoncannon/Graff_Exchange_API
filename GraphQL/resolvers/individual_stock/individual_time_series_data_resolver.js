@@ -33,9 +33,14 @@ module.exports = async ( { symbol } ) => {
     }
 
     // insert into the cache 
-    
-    Redis.set(redis_key, JSON.stringify(result.data.historical) )
 
+    Redis.set(redis_key, JSON.stringify(result.data.historical) )
     
+    // data expires at EOD
+
+    expiry_time = parseInt( (new Date().setHours(9, 30, 0, 0)) / 1000)
+    
+    Redis.expireat(redis_key, expiry_time);
+
     return result.data.historical
 }

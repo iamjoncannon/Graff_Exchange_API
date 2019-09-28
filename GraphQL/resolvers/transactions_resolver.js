@@ -42,6 +42,8 @@ module.exports = async (User_Profile) => {
     })
 
     // insert into the cache 
+    // no expiration- they are deleted when the user
+    // makes a new transaction
     
     Redis.set(redis_key, JSON.stringify(result.rows))
 
