@@ -1,5 +1,5 @@
 const axios = require("axios")
-const http = require('../../../server')
+const { http } = require('../../../server')
 
 // populates each stocks financial data from external
 // OHLC endpoint

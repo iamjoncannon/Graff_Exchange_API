@@ -1,5 +1,4 @@
-const axios = require("axios")
-const http = require('../../../server')
+const { http } = require('../../../server')
 
 // populates each stocks news data from external
 // news api

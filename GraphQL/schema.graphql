@@ -35,7 +35,7 @@ type Mutation {
 
 """
 
-types for total profile page
+mutation inputs 
 
 """
 
@@ -46,6 +46,21 @@ input sign_up_input {
     last_name: String 
     email: String 
 }
+
+input make_transaction_input {
+
+    type: String  
+    symbol: String 
+    quantity: Int 
+    price: Float
+}
+
+"""
+
+types for total profile page
+
+"""
+
 
 type User_Profile {
 
@@ -96,14 +111,6 @@ type Transaction {
     date_conducted: String 
 }
 
-input make_transaction_input {
-
-    type: String  
-    symbol: String 
-    quantity: Int 
-    price: Float
-}
-
 type Trade_Return_Data {
 
     transaction_result: Trade_Return_Data_Fields
@@ -117,6 +124,7 @@ type Trade_Return_Data_Fields {
     balance: Float 
     new_holding: Int
 }
+
 
 """ 
 

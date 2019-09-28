@@ -1,4 +1,5 @@
 // combine type definitions and resolvers into GraphQL api
+// perform authentication from JWT token
 
 const { ApolloServer, gql, AuthenticationError } = require('apollo-server-express');
 const fs = require('fs')
@@ -42,7 +43,7 @@ const validate_request = async ( { req } ) => {
 
     if(req.body.operationName !== "IntrospectionQuery") {
         
-        console.log(req.body.operationName, req.body.variables)
+        console.log(req.body.operationName, "variables: ", req.body.variables)
         // console.log("token: ", decoded_token)
     }
 
