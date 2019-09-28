@@ -6,6 +6,7 @@ const { Redis } = require('../../../server')
 
 module.exports = async ( { symbol } ) => {
  
+    // see note below 
     const redis_key = `${symbol}-financials`
 
     let redis_data = await Redis.getAsync(redis_key)
@@ -23,20 +24,22 @@ module.exports = async ( { symbol } ) => {
 
     try {   
 
-        result = await http.get(`https://api.financialmodelingprep.com/api/v3/financials/income-statement/${symbol}?period=quarter`)
+        let api_result = await http.get(`https://api.financialmodelingprep.com/api/v3/financials/income-statement/${symbol}?period=quarter`)
         
+        result = api_result.data.financials.slice(0,4)
+
     } catch (error) {
         
         result = error
         console.log("error in holdings_resolver Query: ", error.statusText)
     }
 
+
     // insert into the cache 
 
     let TTL = 60 * 60 * 24 * 7 
     
-    Redis.set(redis_key, JSON.stringify(result.data.financials), "EX", TTL  )
+    Redis.set(redis_key, JSON.stringify( result ), "EX", TTL  )
         
-    return { data : JSON.stringify(result.data.financials) }
+    return { data : JSON.stringify( result ) }
 }
-
