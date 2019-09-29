@@ -19,7 +19,7 @@ two different sets of types:
 type Query {
 
     login(email: String, password: String): User_Profile
-    hydrate_portfolio: Portfolio # web
+    hydrate_portfolio(token: String): Portfolio # web
     all_individual_stock_data(symbol: String): Individual_Stock_Data  # mobile
     hydrate_news(symbol: String): [News_Story] # web
     hydrate_quarterly_financials(symbol: String): Quarterly_Financials # web

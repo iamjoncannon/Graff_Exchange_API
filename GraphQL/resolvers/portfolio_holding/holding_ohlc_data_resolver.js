@@ -24,8 +24,6 @@ module.exports = async ( Holding ) => {
         return JSON.parse(redis_data) 
     }
 
-
-
     let result 
     
     try {   
@@ -37,7 +35,6 @@ module.exports = async ( Holding ) => {
         result = error
         console.log("error in holdings_resolver Query: ", error.statusText)
     }
-
 
     Redis.set(redis_key, JSON.stringify(result.data) )
     

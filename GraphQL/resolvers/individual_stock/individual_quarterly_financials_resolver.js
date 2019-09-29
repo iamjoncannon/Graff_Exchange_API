@@ -18,8 +18,6 @@ module.exports = async ( { symbol } ) => {
         return { data : redis_data } 
     }
     
-
-    
     let result 
 
     try {   
@@ -33,7 +31,6 @@ module.exports = async ( { symbol } ) => {
         result = error
         console.log("error in holdings_resolver Query: ", error.statusText)
     }
-
 
     // insert into the cache 
 

@@ -18,9 +18,9 @@ const Query = {
     login: login_resolver,
     hydrate_portfolio: ( _, __, req ) => { return  {id: req.body.token.id} },
     all_individual_stock_data: ( _, symbol ) => { return symbol },
-    hydrate_news: (_, vars) => { return news_data_resolver(vars)},
-    hydrate_quarterly_financials: (_, vars) => { return quarterly_financials_resolver(vars)},
-    hydrate_time_series_data: (_, vars) => { return time_series_financials_resolver(vars)},
+    hydrate_news: (_, vars) => { return news_data_resolver(vars) },
+    hydrate_quarterly_financials: (_, vars) => { return quarterly_financials_resolver(vars) },
+    hydrate_time_series_data: (_, vars) => { return time_series_financials_resolver(vars) },
 }
 
 const Mutation = {

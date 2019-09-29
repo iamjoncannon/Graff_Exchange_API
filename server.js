@@ -8,17 +8,21 @@ const Redis = require("./Redis/cache_root")
 module.exports.Redis = Redis.client
 // both have to be instantiated before GraphQL server
 const express = require('express');
-const cors = require('cors')
 const bodyParser = require('body-parser');
 const postgres_pool = require("./postgresDB_driver/postgres_driver")
-let app = express(); 
+const app = express(); 
+const path = require("path")
 const graphQLServer = require("./GraphQL/graphQLserver")
-const port = process.env.PORT || 8000;
-
-app.use(cors())
-app.options('*', cors())
+const port = process.env.PORT || 3000;
+const public_asset_folder = '../Graff_Exchange/public'
 
 graphQLServer.applyMiddleware({ app }); 
+
+app.use(express.static(public_asset_folder))
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, public_asset_folder, "index.html"))
+  }) 
 
 app.use(bodyParser.urlencoded({ 
     extended: true
@@ -31,6 +35,7 @@ const test = postgres_pool.query("select now();", null, (err, res)=>{
 
     if(err){
         console.log("Connection to postgres failed: ", err)
+        process.exit(1)
         return
     }
     console.log("The time in postgres is ", res.rows[0].now)

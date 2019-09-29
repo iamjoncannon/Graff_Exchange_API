@@ -61,6 +61,7 @@ const signup = async (_, { input }) => {
     // put GOOGL into their transactions for the downstream resolvers
 
     try {   
+        
         const initial_holdings = `insert into holdings (userid, symbol, current_holding) values ( ${id}, 'GOOGL', 0);`
         const initial_transactions = `insert into transactions (userid, type, symbol, quantity, price) values ( ${id}, 'Buy', 'GOOGL', 0, 0);`
         

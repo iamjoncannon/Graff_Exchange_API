@@ -1,7 +1,7 @@
 // combine type definitions and resolvers into GraphQL api
 // perform authentication from JWT token
 
-const { ApolloServer, gql, AuthenticationError } = require('apollo-server-express');
+const { ApolloServer, gql, AuthenticationError, UserInputError } = require('apollo-server-express');
 const fs = require('fs')
 const typeDefs = gql(fs.readFileSync(__dirname + "/schema.graphql", { encoding: "utf-8" }))
 const resolvers = require('./root_resolver.js')
@@ -10,7 +10,9 @@ let config = require('../config');
 
 const validate_request = async ( { req } ) => {
 
-    const token = req.headers.authorization
+    let token = req.headers.authorization 
+
+    if(token === "null") token = req.body.variables.token
 
     // block requests for operations that require
     // authorization, where no token is included
@@ -33,7 +35,8 @@ const validate_request = async ( { req } ) => {
             if(err){
 
                 console.log("token authentication error: ", err)   
-                throw new AuthenticationError('token invalid: ', err)        
+                
+                throw new AuthenticationError('token invalid: ', {message: "invalid token"})        
             }
             
             decoded_token = result 

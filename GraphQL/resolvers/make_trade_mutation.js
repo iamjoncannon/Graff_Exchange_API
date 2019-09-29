@@ -137,9 +137,9 @@ const make_trade_mutation = async ( _, { input }, req ) => {
 
         await postgres_db.query('BEGIN')
                                                                                                                 
-        const purchase_call_output  = await postgres_db.query(purchase_call, [user_id, symbol, holding_change])
+        const purchase_call_output  = await postgres_db.query( purchase_call, [ user_id, symbol, holding_change ] )
     
-        const insert_transaction_call_output = await postgres_db.query(insert_transaction_call, [user_id, type, symbol, quantity, price])
+        const insert_transaction_call_output = await postgres_db.query(insert_transaction_call, [ user_id, type, symbol, quantity, price ] )
 
         const update_balance_call_output = await postgres_db.query(update_balance_call, [ balance_change, user_id ])
     
