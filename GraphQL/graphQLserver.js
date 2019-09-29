@@ -10,7 +10,9 @@ let config = require('../config');
 
 const validate_request = async ( { req } ) => {
 
-    const token = req.headers.authorization
+    let token = req.headers.authorization 
+
+    if(token === "null") token = req.body.variables.token
 
     // block requests for operations that require
     // authorization, where no token is included

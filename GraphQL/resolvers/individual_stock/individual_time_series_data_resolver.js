@@ -19,7 +19,6 @@ module.exports = async ( { symbol } ) => {
         return JSON.parse(redis_data)
     }
 
-    
     let result 
 
     try {   

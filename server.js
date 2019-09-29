@@ -35,6 +35,7 @@ const test = postgres_pool.query("select now();", null, (err, res)=>{
 
     if(err){
         console.log("Connection to postgres failed: ", err)
+        process.exit(1)
         return
     }
     console.log("The time in postgres is ", res.rows[0].now)
