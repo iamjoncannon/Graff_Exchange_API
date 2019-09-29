@@ -18,8 +18,7 @@ const public_asset_folder = '../Graff_Exchange/public'
 
 graphQLServer.applyMiddleware({ app }); 
 
-app.use(express.static(path.join(__dirname, public_asset_folder)))
-app.use(express.static(path.join(__dirname, public_asset_folder + "/indiv")))
+app.use(express.static(public_asset_folder))
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, public_asset_folder, "index.html"))
