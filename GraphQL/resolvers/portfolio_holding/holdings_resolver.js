@@ -31,8 +31,11 @@ module.exports = async ( User_Profile ) => {
         
     } catch (error) {
         
-        result = error
-        console.log("error in holdings_resolver Query: ", error)
+        result = error.statusText ? error.statusText : error ;
+
+        console.log("error in quarterly financials resolver: ", result)
+        
+        return { "server_error": result } 
     }
 
     Redis.set(redis_key, JSON.stringify(result.rows) )

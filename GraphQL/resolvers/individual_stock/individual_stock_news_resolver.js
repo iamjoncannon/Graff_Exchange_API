@@ -17,24 +17,25 @@ module.exports = async ( { symbol } ) => {
         return JSON.parse(redis_data) 
     }
 
-    
     let result 
 
     try {   
-
+     
         result = await http.get(`https://stocknewsapi.com/api/v1?tickers=${symbol}&items=30&token=${process.env.NEWS_API_KEY}`)
         
     } catch (error) {
         
-        result = error
-        console.log("error in holdings_resolver Query: ", error.statusText)
+        result = error.statusText ? error.statusText : error ;
+
+        console.log("error in quarterly financials resolver: ", result)
+        
+        return { "server_error": result } 
     }
 
     // news keys expire in 24 hours - 60s * 60m * 24h
     let TTL = 60 * 60 * 24
     
     Redis.set(redis_key, JSON.stringify(result.data.data), "EX", TTL )
-
-    
+ 
     return result.data.data
 }

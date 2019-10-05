@@ -28,8 +28,11 @@ module.exports = async ( { symbol } ) => {
 
     } catch (error) {
         
-        result = error
-        console.log("error in holdings_resolver Query: ", error.statusText)
+        result = error.statusText ? error.statusText : error ;
+
+        console.log("error in quarterly financials resolver: ", result)
+        
+        return { "server_error": result } 
     }
 
     // insert into the cache 

@@ -1,0 +1,1 @@
+curl -d "username=admin3&password=password" -X POST localhost:8000/signup

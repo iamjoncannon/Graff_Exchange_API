@@ -7,6 +7,7 @@ Fullstack application with data from web socket, SQL data store, external APIs, 
 - React, global state management with Redux
 - SASS (no CSS framework) 
 - socket connection to IEX api integrated into Redux store
+- test suite- Jest/react-renderer
 
 Deployed: http://graff.joncannon.codes
 
@@ -21,3 +22,4 @@ Features:
 - trade mutation with "atomic" SQL transaction 
 - data aggregated from PostgreSQL data store and external financial APIs 
 - Redis caching with cache eviction strategy for each data source
+- test suite- Jest
