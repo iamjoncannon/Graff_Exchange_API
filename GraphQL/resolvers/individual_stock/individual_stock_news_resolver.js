@@ -20,7 +20,7 @@ module.exports = async ( { symbol } ) => {
     let result 
 
     try {   
-        console.log("calling api")
+     
         result = await http.get(`https://stocknewsapi.com/api/v1?tickers=${symbol}&items=30&token=${process.env.NEWS_API_KEY}`)
         
     } catch (error) {

@@ -1,30 +1,17 @@
-const resolver = require("./individual_quarterly_financials_resolver")
+const resolver = require("./holding_ohlc_data_resolver")
 const sinon = require('sinon')
 const { http, Redis } = require('../../../server')
-const nock = require("nock")
 
-describe("individual_quarterly_financials_resolver",()=>{
+describe("holding_ohlc_data_resolver",()=>{
 
     let data_from_api
     let data_from_redis
 
     beforeAll((done)=>{
-
-        let returnData = {}
-        const baseURL = "api.financialmodelingprep.com" 
-        const resource = "/api/v3/financials/income-statement/FB?period=quarter"
-        const headers = {"accept": "application/json, text/plain, */*","user-agent": "axios/0.19.0"}
-        
-        nock( baseURL, {
-            reqheaders: headers,
-          })
-         .get(resource)
-           .reply(200, returnData )
         
         sinon.spy(http, "get")
-
         Redis.flushdb( function (err, succeeded) {
-            console.log("flushed", succeeded);
+            console.log("flushed", succeeded); // will be true if successfull
             done()
         });
 
@@ -33,7 +20,7 @@ describe("individual_quarterly_financials_resolver",()=>{
 
     afterAll(async ()=>{
 
-        http.get.resetHistory()
+        http.get.resetHistory() 
     })
 
     it("calls an external api for data when data not stored in redis cache", async (done)=>{
@@ -44,22 +31,29 @@ describe("individual_quarterly_financials_resolver",()=>{
         
         expect(http.get.callCount).toEqual(1)
 
-        // the zeroeth call happens when the client initializes
-        // this first Redis call checks the database and returns null
         expect(await Redis.getAsync.getCalls()[1].returnValue).toEqual(null)
         
         done()
     })
 
-    it("resolves data from redis cache after the initial api call", async (done)=>{
+    it("resolves data from redis cache after the initial api call if after trading hours", async (done)=>{
       
         let data = await resolver({symbol: "FB"})
 
         data_from_redis = data
+        const is_EOD = (new Date()).getHours() < 17
 
-        expect(http.get.callCount).toEqual(1)
+        if(is_EOD){
 
-        expect(await Redis.getAsync.getCalls()[2].returnValue).toBeTruthy()
+            expect(http.get.callCount).toEqual(1)
+            expect(await Redis.getAsync.getCalls()[2].returnValue).toBeTruthy()
+        }
+        else{
+
+            expect(http.get.callCount).toEqual(2)
+            expect(await Redis.getAsync.getCalls()[2].returnValue).toEqual(null)
+        }
+
 
         done()
     })
@@ -72,7 +66,7 @@ describe("individual_quarterly_financials_resolver",()=>{
     it("error from server returns an error", async (done)=>{
 
         Redis.flushdb( async function (err, succeeded) {
-            
+        
             http.get = null 
             let data = await resolver({symbol: "FB"})
             expect(data.server_error).toBeTruthy()

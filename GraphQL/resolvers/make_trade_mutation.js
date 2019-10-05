@@ -18,13 +18,21 @@ const make_trade_mutation = async ( _, { input }, req ) => {
     }
 
     // delete transactions and holdings from redis cache- 
+    let redis_delete_transactions
+    let redis_delete_holdings
 
-    let redis_delete_transactions = await Redis.del(`${user_id}-transactions`)
-    let redis_delete_holdings = await Redis.del(`${user_id}-holdings`)
+    try{
+
+      redis_delete_transactions   = await Redis.del(`${user_id}-transactions`)
+      redis_delete_holdings = await Redis.del(`${user_id}-holdings`)
+    }
+    catch(err){
+        console.error(err)
+    }
 
     if(!redis_delete_transactions || !redis_delete_holdings){
      
-        console.log("transactions redis delete failed", redis_delete)
+        console.log("transactions redis delete failed", redis_delete_transactions, redis_delete_holdings)
     }
 
     const { type, symbol, quantity, price } = input 
@@ -110,7 +118,7 @@ const make_trade_mutation = async ( _, { input }, req ) => {
 
     if(is_buy && current_balance < cost){
 
-        throw new UserInputError("Transaction failed- unable to cover purchase.", current_balance)
+        throw new UserInputError( "invalid order", { message: "Transaction failed- unable to cover purchase." })
     }
             
     // transaction
