@@ -19,10 +19,12 @@ const login = async ( _, { email, password } )  => {
     } catch (error) {
         
         result = error
-        console.log("error in login Query: ", error)
+        console.error("error in login Query: ", error)
     }
 
     if( !result.rows || !result.rows[0]){
+
+        console.error("no result rows: ", result.rows)
         
         throw new UserInputError('Server Error- unable to find user', result);
     }

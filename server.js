@@ -14,7 +14,7 @@ const app = express();
 const path = require("path")
 const graphQLServer = require("./GraphQL/graphQLserver")
 const port = process.env.PORT || 3000;
-const public_asset_folder = '../Graff_Exchange/public'
+const public_asset_folder = '../Graff_Exchange_test/public'
 
 graphQLServer.applyMiddleware({ app }); 
 
@@ -41,5 +41,9 @@ const test = postgres_pool.query("select now();", null, (err, res)=>{
     console.log("The time in postgres is ", res.rows[0].now)
 })
 
-app.listen(port, () => console.log(`Server is listening on port: ${port}`))
+app.listen(port, () => {
+
+    
+    console.log(`Server is listening on port: ${port}`)
+})
 

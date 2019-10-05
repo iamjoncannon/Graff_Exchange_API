@@ -27,8 +27,11 @@ module.exports = async ( { symbol } ) => {
         
     } catch (error) {
         
-        result = error
-        console.log("error in holdings_resolver Query: ", error.statusText)
+        result = error.statusText ? error.statusText : error ;
+
+        console.log("error in quarterly financials resolver: ", result)
+        
+        return { "server_error": result } 
     }
 
     // insert into the cache 
@@ -37,9 +40,9 @@ module.exports = async ( { symbol } ) => {
     
     // data expires at EOD
 
-    expiry_time = parseInt( (new Date().setHours(9, 30, 0, 0)) / 1000)
+    // expiry_time = parseInt( (new Date().setHours(9, 30, 0, 0)) / 1000)
     
-    Redis.expireat(redis_key, expiry_time);
+    // Redis.expireat(redis_key, expiry_time);
 
     return result.data.historical
 }
