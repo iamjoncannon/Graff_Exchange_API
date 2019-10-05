@@ -10,6 +10,7 @@ describe("holding_ohlc_data_resolver",()=>{
     beforeAll((done)=>{
         
         sinon.spy(http, "get")
+        
         Redis.flushdb( function (err, succeeded) {
             console.log("flushed", succeeded); // will be true if successfull
             done()

@@ -10,7 +10,7 @@ describe("holdings_resolver",()=>{
     beforeAll((done)=>{
 
         Redis.flushdb( function (err, succeeded) {
-            console.log("flushed", succeeded); // will be true if successfull
+            console.log("flushed", succeeded); 
             done()
         });
 

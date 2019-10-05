@@ -1,3 +1,7 @@
+let jwt = require('jsonwebtoken');
+let config = require('../config');
+const { AuthenticationError } = require('apollo-server-express');
+
 module.exports = async ( { req } ) => {
 
     let token = req.headers.authorization 
@@ -26,7 +30,8 @@ module.exports = async ( { req } ) => {
 
                 console.log("token authentication error: ", err)   
                 
-                throw new AuthenticationError('token invalid: ', {message: "invalid token"})        
+                throw new AuthenticationError('invalid token', {message: "invalid token"})        
+            
             }
             
             decoded_token = result 

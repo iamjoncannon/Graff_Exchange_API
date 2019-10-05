@@ -32,6 +32,7 @@ module.exports = async (User_Profile) => {
         
         result = error
         console.log("error in holdings_resolver Query: ", error)
+        return error 
     }
 
     // convert dates to string- PG returns "Date" object

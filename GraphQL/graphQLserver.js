@@ -5,8 +5,7 @@ const { ApolloServer, gql, AuthenticationError, UserInputError } = require('apol
 const fs = require('fs')
 const typeDefs = gql(fs.readFileSync(__dirname + "/schema.graphql", { encoding: "utf-8" }))
 const resolvers = require('./root_resolver.js')
-let jwt = require('jsonwebtoken');
-let config = require('../config');
+
 const validate_request = require("./authentication")
 
 const graphQLServer = new ApolloServer({ typeDefs, 

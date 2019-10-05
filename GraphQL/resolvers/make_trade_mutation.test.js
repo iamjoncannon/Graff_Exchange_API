@@ -1,21 +1,16 @@
 const resolver = require("./make_trade_mutation")
 const sinon = require('sinon')
-const { Redis } = require('../../server')
 const signup = require("./authentication/signup")
 const postgres_db = require("../../postgresDB_driver/postgres_driver")
 
 describe("make_trade_mutation",()=>{
 
     let data_from_postgres
-    let data_from_redis
     let users_id
 
     beforeAll(async (done)=>{
 
-        await Redis.flushdb() 
         await postgres_db.query("delete from users; delete from holdings; delete from transactions;")
-
-        sinon.spy(Redis, "getAsync" )
 
         const signup_variables = { input: 
             { email: "userthree@test.com", 
@@ -71,16 +66,19 @@ describe("make_trade_mutation",()=>{
 
     it("successfully inputs transaction into database", ()=>{
 
-        
         expect(data_from_postgres).toBeTruthy()
     })
 
-    it("returns user's new holding of that stock, their new balance, and a full transaction object", ()=>{
+    it("returns user's new holding of that stock and their new balance, and a full transaction object", ()=>{
 
         expect(data_from_postgres.new_holding).toBeTruthy()
+        expect(data_from_postgres.balance).toBeTruthy()
+    })
+
+    it("returns a full transaction object", ()=>{
+
         expect(data_from_postgres.transaction).toBeTruthy()
         expect(typeof data_from_postgres.transaction).toEqual("object")
-        expect(data_from_postgres.balance).toBeTruthy()
     })
 
     it("if insufficient balance to cover buy, returns error", async (done)=>{
