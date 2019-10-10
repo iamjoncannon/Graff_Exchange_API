@@ -23,3 +23,4 @@ Features:
 - data aggregated from PostgreSQL data store and external financial APIs 
 - Redis caching with cache eviction strategy for each data source
 - test suite- Jest
+- Reimplemented REST APIs in GraphQL. Previous API written in Golang https://github.com/iamjoncannon/GopherFinanceAPI
