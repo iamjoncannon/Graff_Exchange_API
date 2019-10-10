@@ -71,36 +71,33 @@ module.exports = { Query,
 
 /*
 
-note- 
+Note- 
 
-the main goal of porting this API to GraphQL is to split data servicing
+The main goal of porting this API to GraphQL is to split data servicing
 between the mobile and web versions of the application- 
 
-in several of the operations above, we want to give the client
+In several of the operations above, we want to give the client
 the option to populate one basic operation with other data
 
-for example, login resolves with a type User_Profile, which itself
+For example, login resolves with a type User_Profile, which itself
 contains [ Holding ] and [ transaction_history ], which have
 separate resolvers 
 
-optionally, we want the client to be able to request OHLC data
+Optionally, we want the client to be able to request OHLC data
 on each of [ Holding ]
 
-however, if the user properties for each Holding- the users's 
-specific holding of that stock- are not defined as a separate
-object, but rather directly as properties of each Holding 
-returned from the parent resolver, and further, the OHLC data is itself 
-then defined as a property of Holding, GraphQL will 
-not treat resolving them as separate operations (they're "the  
-same node" so to speak, they don't have separate edges from a 
-shared parent node)
+However, if "user_data"- the user specifc properties for each Holding- 
+are not defined as a separate object, but rather directly as properties 
+of each Holding returned from the parent resolver, and the OHLC data is  
+then defined as a property of Holding, GraphQL will not treat resolving 
+them as separate operations (they're "the same node" so to speak, they 
+don't have separate edges from a shared parent node)
 
-it will expect the parent resolver that issues [ Holding ] - defined
-on the User Profile resolver, to populate the OHLC data, which would
-mean iterateing over the array in the parent resolver and making the 
-OHLC database call- defeating the purpose of using GraphQL
+It will expect the parent resolver that issues [ Holding ] - defined
+on the User Profile resolver - to populate the OHLC data, which would
+not give the client the option to exclude that data. 
 
-in order to have GraphQL manage these as two separate operations,
+In order to have GraphQL manage these as two separate operations,
 the solution I found was to define the data returned from the parent
 resolver as a separate object, then superficially populate this in a 
 separate function, alongside the additional data that I want the client
